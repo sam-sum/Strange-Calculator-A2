@@ -132,7 +132,7 @@ class Calculation {
             evaluateAnswer()
         case "=":
             // if the input not yet completed, do nothing
-            if !(inputString.last == "+" || inputString.last == "-" || inputString.last == "x" || inputString.last == "÷" || inputString.last == ".") {
+            if !(inputString.last == "+" || inputString.last == "-" || inputString.last == "x" || inputString.last == "÷" || inputString.last == "." || isEndCalcuation) {
                 //clear the steps and replace it with the final answer
                 evaluateAnswer()
                 isEndCalcuation = true

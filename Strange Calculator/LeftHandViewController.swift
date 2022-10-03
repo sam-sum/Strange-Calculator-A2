@@ -19,8 +19,13 @@ class LeftHandViewController: UIViewController {
     @IBOutlet weak var resultLabel: UILabel!
     @IBOutlet weak var stepsLabel: UILabel!
     
+    let maxStepsChar = 33
+    let maxCharInLine = 11
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        resultLabel.text = Calculation.shared.getResult()
+        stepsLabel.text = Calculation.shared.getSteps(maxStepsChar)
     }
     
     @IBAction func btnDown(_ sender: UIButton) {
@@ -33,24 +38,36 @@ class LeftHandViewController: UIViewController {
     
     @IBAction func btnNumbersUpInside(_ sender: UIButton) {
         sender.backgroundColor = UIColor.clear
-        let button = sender as UIButton
-        resultLabel.text = button.titleLabel!.text
+        let keyText = sender.titleLabel?.text ?? ""
+        let (steps, result) = Calculation.shared.handleNumberInput(inNum: keyText, outChar: maxStepsChar)
+        stepsLabel.text = steps
+        resultLabel.text = result
+        alignLabelText()
     }
     
     @IBAction func btnOperatorsUpInside(_ sender: UIButton) {
         sender.backgroundColor = UIColor.clear
-        let button = sender as UIButton
-        resultLabel.text = button.titleLabel!.text
+        let keyText = sender.titleLabel?.text ?? ""
+        let (steps, result) = Calculation.shared.handleOperaters(inKey: keyText, outChar: maxStepsChar)
+        stepsLabel.text = steps
+        resultLabel.text = result
+        alignLabelText()
     }
     
     @IBAction func btnSpecialUpInside(_ sender: UIButton) {
         sender.backgroundColor = UIColor.clear
-        let button = sender as UIButton
-        if button.tag == 1000 {
-            //AC button
-            resultLabel.text = "0"
+        let keyText = sender.titleLabel?.text ?? ""
+        let (steps, result) = Calculation.shared.handleSpecialKeys(inKey: keyText, outChar: maxStepsChar)
+        stepsLabel.text = steps
+        resultLabel.text = result
+        alignLabelText()
+    }
+
+    private func alignLabelText() {
+        if stepsLabel.text?.count ?? 0 > maxCharInLine {
+            stepsLabel.textAlignment = NSTextAlignment.left
         } else {
-            //Back button
+            stepsLabel.textAlignment = NSTextAlignment.right
         }
     }
 }
