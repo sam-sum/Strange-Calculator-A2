@@ -19,6 +19,8 @@ class Calculation {
     private var inputString: String = "0"
     private var result: String = ""
     private var isEndCalcuation = true
+    private let maxStepsChar = 15
+    private let errorMsgOverflow = "Overflow"
     
     private init(){}
     
@@ -31,8 +33,11 @@ class Calculation {
     }
     
     func handleNumberInput(inNum: String, outChar: Int) -> (String, String) {
+        // do nothing if overflow error occurred
+        if inputString == errorMsgOverflow {
+            return (String(inputString.suffix(outChar)), result)
+        }
         // if a calculation has been completed (isEndCalcuation), the input digit will replace the previous steps
-        
         // allow digits input only if the previous char is not a %, )
         if !(inputString.last == "%" || inputString.last == ")") {
             switch inNum {
@@ -71,6 +76,11 @@ class Calculation {
             isEndCalcuation = true
         case "←":
              // back key pressed
+            // do nothing if overflow error occurred
+            if inputString == errorMsgOverflow {
+                return (String(inputString.suffix(outChar)), result)
+            }
+
             if inputString.last == ")" {
                 //handle deletion of a -ve value
                 makeLastOperandPositive()
@@ -90,6 +100,11 @@ class Calculation {
     }
     
     func handleOperaters(inKey: String, outChar: Int) -> (String, String) {
+        // do nothing if overflow error occurred
+        if inputString == errorMsgOverflow {
+            return (String(inputString.suffix(outChar)), result)
+        }
+
         switch inKey {
         case "+", "-", "x", "÷":
             if inputString.last == "+" || inputString.last == "-" || inputString.last == "x" || inputString.last == "÷" || inputString.last == "." {
@@ -116,11 +131,14 @@ class Calculation {
             isEndCalcuation = false
             evaluateAnswer()
         case "=":
-            //clear the steps and replace it with the final answer
-            evaluateAnswer()
-            isEndCalcuation = true
-            inputString = result
-            result = ""
+            // if the input not yet completed, do nothing
+            if !(inputString.last == "+" || inputString.last == "-" || inputString.last == "x" || inputString.last == "÷" || inputString.last == ".") {
+                //clear the steps and replace it with the final answer
+                evaluateAnswer()
+                isEndCalcuation = true
+                inputString = result
+                result = ""
+            }
         default:
             print ("func handleOperaters: \(inKey) not handled")
         }
@@ -299,13 +317,35 @@ class Calculation {
         //update the result label only if it is an valid evaluation
         if inTokens.count == 1 {
             if let number = Double(inTokens[0]) {
-                if Double(Int(number)) == number {
-                    // the result is an integer, remove the trailing zero
-                    result = String(Int(number))
+                // the result is an integer, remove the trailing zero
+                let RoundedNumber = Double(String(format: "%.f", number))
+                if RoundedNumber == number {
+                    result = String(format: "%.f", number)
                 } else {
                     result = String(number)
                 }
             }
+        }
+        //check the display overflow may occur
+        if result.count > maxStepsChar {
+            if result.contains(".") {
+                // try to trim the decmial places to prevent overflow if possible
+                var workingString = result
+                while workingString.contains(".") && workingString.count > maxStepsChar {
+                    workingString = String(workingString.dropLast())
+                }
+                if workingString.contains(".") {
+                    // trim success
+                    result = workingString
+                } else {
+                    result = errorMsgOverflow
+                }
+            } else {
+                result = errorMsgOverflow
+            }
+        }
+        if result == inputString {
+            result = ""
         }
     }
 }

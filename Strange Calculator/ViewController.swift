@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var stepsLabel: UILabel!
     
     let maxStepsChar = 33
+    let maxCharInLine = 11
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +42,7 @@ class ViewController: UIViewController {
         let (steps, result) = Calculation.shared.handleNumberInput(inNum: keyText, outChar: maxStepsChar)
         stepsLabel.text = steps
         resultLabel.text = result
+        alignLabelText()
     }
     
     @IBAction func btnOperatorsUpInside(_ sender: UIButton) {
@@ -49,6 +51,7 @@ class ViewController: UIViewController {
         let (steps, result) = Calculation.shared.handleOperaters(inKey: keyText, outChar: maxStepsChar)
         stepsLabel.text = steps
         resultLabel.text = result
+        alignLabelText()
     }
     
     @IBAction func btnSpecialUpInside(_ sender: UIButton) {
@@ -57,6 +60,15 @@ class ViewController: UIViewController {
         let (steps, result) = Calculation.shared.handleSpecialKeys(inKey: keyText, outChar: maxStepsChar)
         stepsLabel.text = steps
         resultLabel.text = result
+        alignLabelText()
+    }
+    
+    private func alignLabelText() {
+        if stepsLabel.text?.count ?? 0 > maxCharInLine {
+            stepsLabel.textAlignment = NSTextAlignment.left
+        } else {
+            stepsLabel.textAlignment = NSTextAlignment.right
+        }
     }
 }
 
