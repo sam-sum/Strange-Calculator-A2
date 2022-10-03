@@ -138,13 +138,23 @@ class Calculation {
             isEndCalcuation = false
             evaluateAnswer()
         case "+/-":
-            // add a pair of () to wrap the number as -ve
-            // allow to make -ve only if the previous char is a number or %
-            if inputString.last == "1" || inputString.last == "2" || inputString.last == "3" || inputString.last == "4" || inputString.last == "5" || inputString.last == "6" || inputString.last == "7" || inputString.last == "8" || inputString.last == "9" || inputString.last == "0" || inputString.last == "%" {
-                makeLastOperandNegative()
-            } else if inputString.last == ")" {
-                // switch the -ve value to +ve
-                makeLastOperandPositive()
+            if hasOneOperandOnly() {
+                if inputString.first == "-" {
+                    // remove leading -ve sign coming from the previous calculation
+                    inputString = String(inputString.dropFirst())
+                } else {
+                    // make the operand -ve
+                    makeLastOperandNegative()
+                }
+            } else {
+                // add a pair of () to wrap the number as -ve
+                // allow to make -ve only if the previous char is a number or %
+                if inputString.last == "1" || inputString.last == "2" || inputString.last == "3" || inputString.last == "4" || inputString.last == "5" || inputString.last == "6" || inputString.last == "7" || inputString.last == "8" || inputString.last == "9" || inputString.last == "0" || inputString.last == "%" {
+                    makeLastOperandNegative()
+                } else if inputString.last == ")" {
+                    // switch the -ve value to +ve
+                    makeLastOperandPositive()
+                }
             }
             isEndCalcuation = false
             evaluateAnswer()
@@ -161,6 +171,18 @@ class Calculation {
             print ("func handleOperaters: \(inKey) not handled")
         }
         return (String(inputString.suffix(outChar)), result)
+    }
+
+    // *****
+    // Check whether the whole input has only 1 operand so far
+    // *****
+    private func hasOneOperandOnly() -> Bool {
+        var found: Bool = false
+        found = inputString.contains("+") || inputString.contains("x") || inputString.contains("÷")
+        if (!found) {
+            found = inputString.contains("-") && inputString.first != "-"
+        }
+        return !found
     }
     
     // *****
@@ -240,7 +262,7 @@ class Calculation {
         print("func evaluateAnswer: tokens array is \(tokens)")
         
         // evaluate the tokens from left to right and only handle x, ÷
-        // by repeating the loop from the beginning after a pair of operands are calculated
+        // by repeating the loop from the beginning after a pair of operands is calculated
         var counter = 1
         while counter < tokens.count  {
             var foundOperator = false
@@ -267,7 +289,7 @@ class Calculation {
         }
 
         // evaluate the tokens from left to right and only handle +, -
-        // by repeating the loop from the beginning after a pair of operands are calculated
+        // by repeating the loop from the beginning after a pair of operands is calculated
         counter = 1
         while counter < tokens.count  {
             var foundOperator = false
