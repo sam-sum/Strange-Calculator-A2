@@ -9,7 +9,7 @@
 //
 //  ViewController.swift
 //  Strange Calculator - A simple calculator with a strange key layout
-//  Version 0.3
+//  Version 0.4
 //
 
 import UIKit
@@ -63,6 +63,9 @@ class LeftHandViewController: UIViewController {
         alignLabelText()
     }
 
+    // *****
+    // Right-align the label text if it can be shown in 1 line. Otherwise, make it left-algn.
+    // *****
     private func alignLabelText() {
         if stepsLabel.text?.count ?? 0 > maxCharInLine {
             stepsLabel.textAlignment = NSTextAlignment.left

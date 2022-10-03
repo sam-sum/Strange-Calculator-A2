@@ -9,11 +9,14 @@
 //
 //  ViewController.swift
 //  Strange Calculator - A simple calculator with a strange key layout
-//  Version 0.3
+//  Version 0.4
 //
 
 import Foundation
 
+// *****
+// A singleton class to perform calculation logic
+// *****
 class Calculation {
     static let shared = Calculation()
     private var inputString: String = "0"
@@ -24,14 +27,23 @@ class Calculation {
     
     private init(){}
     
+    // *****
+    // Getter to return the calculation result
+    // *****
     func getResult() -> String {
         return result
     }
 
+    // *****
+    // Getter to return the calculation steps
+    // *****
     func getSteps(_ numChar: Int) -> String {
         return String(inputString.suffix(numChar))
     }
     
+    // *****
+    // Handle numberic and the decmial point input
+    // *****
     func handleNumberInput(inNum: String, outChar: Int) -> (String, String) {
         // do nothing if overflow error occurred
         if inputString == errorMsgOverflow {
@@ -67,6 +79,9 @@ class Calculation {
         return (String(inputString.suffix(outChar)), result)
     }
 
+    // *****
+    // Handle special keys input - AC (all clear) and the back (delete) key
+    // *****
     func handleSpecialKeys(inKey: String, outChar: Int) -> (String, String) {
         switch inKey {
         case "AC":
@@ -99,6 +114,9 @@ class Calculation {
         return (String(inputString.suffix(outChar)), result)
     }
     
+    // *****
+    // Handle operator keys "+", "-", "x", "÷" , "=", "+/-", "%"
+    // *****
     func handleOperaters(inKey: String, outChar: Int) -> (String, String) {
         // do nothing if overflow error occurred
         if inputString == errorMsgOverflow {
@@ -145,6 +163,9 @@ class Calculation {
         return (String(inputString.suffix(outChar)), result)
     }
     
+    // *****
+    // Check whether the last input operand has a decmial point
+    // *****
     private func hasDecmial() -> Bool {
         var found: Bool = false
         for ch in inputString.reversed() {
@@ -158,6 +179,9 @@ class Calculation {
         return found
     }
     
+    // *****
+    // Make the last input operand be a -ve value
+    // *****
     private func makeLastOperandNegative() {
         var extractedString = ""
         var charCount = 0
@@ -178,6 +202,9 @@ class Calculation {
         print("func makeLastOperandNegative: new inputString is \(inputString)")
     }
     
+    // *****
+    // Make the last input operand be a +ve value
+    // *****
     private func makeLastOperandPositive() {
         var extractedString = ""
         var charCount = 0
@@ -199,6 +226,9 @@ class Calculation {
         print("func makeLastOperandNegative: new inputString is \(inputString)")
     }
     
+    // *****
+    // Calculate the result of the input steps from left to right and follow operator precedence
+    // *****
     private func evaluateAnswer() {
         // play safe to discard calls if the inputString is incomplete
         let char = inputString.last
@@ -266,6 +296,9 @@ class Calculation {
         updateResult(tokens)
     }
     
+    // *****
+    // Convert the input string into an array of operands and operators
+    // *****
     private func tokenizeInputString() -> [String] {
         var workingTokens = [String]()
         var extractedString = ""
@@ -302,6 +335,9 @@ class Calculation {
         return workingTokens
     }
     
+    // *****
+    // Replace a set of operands / operator with its evaluated result
+    // *****
     private func replaceTokens(originalTokens: [String], newToken: String, index: Int) -> [String] {
         // remove a pair of operands an their operator. Than add back the result into the original position
         var newTokens = originalTokens
@@ -313,6 +349,9 @@ class Calculation {
         return newTokens
     }
     
+    // *****
+    // Update and format the result label content with evaluated result
+    // *****
     private func updateResult(_ inTokens: [String]) {
         //update the result label only if it is an valid evaluation
         if inTokens.count == 1 {
